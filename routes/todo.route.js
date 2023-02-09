@@ -1,44 +1,54 @@
-const express=require('express')
+const express = require("express");
 
-const router= express.Router();
-const db=require("../config/database")
-const Todo=require("../model/todo.model")
-const {Sequelize}=require("sequelize")
-router.get("/want",(req,res)=>{
+const router = express.Router();
+const db = require("../config/database");
+const Todo = require("../model/todo.model");
+const { Sequelize } = require("sequelize");
+const {
+  createTodo,
+  searchTodo,
+  updateTodo,
+  deleteTodo,
+  getTodo,
+} = require("../controller/index.controller");
 
-    Todo.findAll()
-        .then(todo=>{
-        res.status(200).send(JSON.stringify(todo,undefined,4))
-    }).catch(err=>{
-        console.log(err)
-    })
-})
 
+/**
+ * @swagger
+ * /todos:
+ *   get:
+ *     description: Retrieve a list of todos
+ *     responses:
+ *       200:
+ *         description: An array of todos
+ */
+router.get("/", getTodo);
+
+/**
+ * @swagger
+ * /todos:
+ *  post:create a todo 
+ * responses:
+ * 200
+ *                 description: success
+ */
 //create
+router.post("/add", createTodo);
 
-router.post("/add",(req,res)=>{
-
-const {description}=req.body;
-Todo.create({
-    description:description
-})
-.then(todo=>{res.send("success")})   
-.catch(err=>{console.log(err.original)})
-})
-
+/**
+ * @swagger
+ * /todos/{id}:
+ *  get:
+ *   description: Retrieve a todo
+ *  parameters:
+ * - name: id
+ *  
+ */
 //search
+router.get("/:search", searchTodo);
+//update
+router.put("/:id", updateTodo);
+//delete
+router.delete("/:id", deleteTodo);
 
-
-router.get("/:search",async(req,res)=>{
-    const {search}=req.params;
-const todo= await Todo.findAll({
-    where:{
-        description:{[Sequelize.Op.iLike]:`%${search}%`}
-    }
-})
-console.log(todo)
-
-    res.send(todo)
-})
-
-module.exports=router
+module.exports = router;

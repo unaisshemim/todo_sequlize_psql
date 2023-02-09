@@ -3,6 +3,10 @@ const app=express();
 const { Sequelize } = require('sequelize');
 const db=require("./config/database")
 const cors=require("cors");
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const {swaggerOptions}=require('./lib/swagger-docs')
+
 
 
 
@@ -13,6 +17,10 @@ app.use(cors());
 app.use(express.json())
 
 //handlebars
+
+const swaggerDocs=swaggerJsDoc(swaggerOptions)
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 
 
